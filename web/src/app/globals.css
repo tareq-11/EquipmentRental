@@ -7,7 +7,30 @@
   --mist: #c6d5d2;
   --signal: #ec6b45;
   --lime: #b7d77a;
+  --surface: #f8faf5;
+  --danger: #a63e28;
 }
+.foundation-preview { padding-block: 4rem 6rem; }
+.foundation-preview h1 { margin: .25rem 0; font-size: clamp(3rem, 9vw, 7rem); line-height: .84; }
+.eyebrow { font: 700 .75rem ui-monospace, monospace; color: var(--signal); letter-spacing: .16em; }
+.lede { max-width: 38rem; font-size: 1.1rem; line-height: 1.6; }
+.state-switch, .dialog-actions { display: flex; flex-wrap: wrap; gap: .5rem; }
+.state-switch { margin-block: 2rem 1rem; }
+button { border: 1px solid var(--ink); background: var(--ink); color: var(--paper); padding: .65rem .9rem; font: inherit; font-weight: 700; cursor: pointer; }
+button:hover { background: var(--signal); border-color: var(--signal); }
+.preview-frame, .preview-grid > section { border: 1px solid color-mix(in srgb, var(--ink) 25%, transparent); background: var(--surface); padding: 1.25rem; }
+.state-card { min-height: 9rem; display: grid; align-content: center; gap: .75rem; max-width: 32rem; }
+.state-card p { margin: 0; color: color-mix(in srgb, var(--ink) 70%, transparent); }
+.state-error { color: var(--danger); }
+.loading-mark { width: 2rem; height: .35rem; background: var(--signal); animation: sweep 1s ease-in-out infinite; }
+.preview-grid { display: grid; gap: 1rem; margin-top: 1rem; grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.preview-grid h2 { font-size: 1.15rem; }
+form { display: grid; gap: .5rem; } input { border: 1px solid var(--ink); padding: .65rem; background: white; color: var(--ink); } .field-error { min-height: 1.2rem; color: var(--danger); margin: 0; font-size: .875rem; }
+.notice { margin-top: 1rem; padding: .75rem; border-inline-start: .3rem solid var(--lime); background: var(--night); color: var(--paper); }
+.dialog-backdrop { position: fixed; inset: 0; display: grid; place-items: center; padding: 1rem; background: rgb(8 32 43 / .65); z-index: 20; }
+.dialog { max-width: 28rem; padding: 1.5rem; background: var(--paper); border: 2px solid var(--ink); } .dialog-actions { margin-top: 1.5rem; } .dialog-actions button:first-child { background: transparent; color: var(--ink); }
+@keyframes sweep { 50% { transform: translateX(4rem); } }
+@media (max-width: 640px) { .preview-grid { grid-template-columns: 1fr; } }
 
 * { box-sizing: border-box; }
 html { background: var(--paper); }

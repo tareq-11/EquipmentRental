@@ -2,6 +2,9 @@ using infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Caching.Hybrid;
+using Services.Abstractions;
+using Services.Foundation;
 
 namespace infrastructure;
 
@@ -26,6 +29,11 @@ public static class DependencyInjection
         }
 
         services.AddDbContext<EquipmentRentalDbContext>(options => options.UseNpgsql(connectionString));
+        services.AddHybridCache(); // Development uses its in-process implementation; Redis is optional and never authoritative.
+        services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
+        services.AddScoped<IUnitOfWork, UnitOfWork>();
+        services.AddScoped<IIdempotencyCoordinator, IdempotencyCoordinator>();
+        services.AddScoped<IFoundationProbeStore, FoundationProbeStore>();
         return services;
     }
 }

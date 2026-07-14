@@ -54,34 +54,36 @@ The generated solution and frontend manifests become the command source of truth
 
 **Outcome:** Cross-cutting backend and frontend conventions are operational before business features depend on them.
 
-- [ ] Implement the Result Pattern and the standard `{ code, message, data }` API response envelope, including field-specific actionable validation errors.
-- [ ] Map validation to 400, authentication/authorization to 401/403, missing data to 404, conflicts to 409, rate limits to 429, and unexpected failures to 500.
-- [ ] Add global exception handling, request correlation IDs, structured request logging, and safe unexpected-error responses.
-- [ ] Establish CQRS command/query and handler conventions with MediatR and FluentValidation; order pipeline behaviors: unhandled exception, performance, validation, idempotency, caching, handler.
-- [ ] Establish generic Repository and Unit of Work abstractions without bypassing aggregate boundaries or transaction ownership.
-- [ ] Add `TimeProvider`, persisted `DateTimeOffset`, `Asia/Amman` display conversion, and decimal JOD money conventions; business rules must not call `DateTime.UtcNow`.
-- [ ] Establish Domain Event dispatch, Outbox persistence, idempotent request persistence, and optimistic concurrency conventions.
-- [ ] Establish manual mapping and LINQ projection conventions; do not add AutoMapper.
-- [ ] Implement the `AuditLog` entity and persistence with acting user, action, target type/ID, timestamp, relevant old/new values, IP address when available, and mandatory reason support for manual overrides.
-- [ ] Configure ASP.NET Core Rate Limiting middleware and endpoint-policy conventions with standard 429 envelope behavior.
-- [ ] Add caching abstractions with optional Redis-backed HybridCache; Development must run without Redis, and cache must never be the availability source of truth.
-- [ ] Configure TanStack Query, React Hook Form, and Zod in the frontend application.
-- [ ] Add shared loading, empty, error, confirmation, and notification patterns with accessible interaction behavior.
-- [ ] Establish localization-ready user-facing strings and RTL-safe layout/design tokens while keeping the MVP UI English.
-- [ ] Create `docs/data-model.md` before Catalog or Availability implementation. Document entities/relationships, aggregate boundaries, ownership, delete behavior, unique constraints, concurrency tokens, snapshot tables, the three rental status dimensions, monetary fields, date/time conventions, and indexes for availability overlaps, active filters, catalog search, customer history, Outbox processing, hold expiration, and operational dashboards.
-- [ ] Add a transition matrix to `docs/data-model.md` for `RentalOperationalStatus`, `RentalFinancialStatus`, and `DamageResolutionStatus`, including allowed transitions, triggering events, authorized actors, validation guards, terminal states, and availability effects.
-- [ ] Treat `docs/data-model.md` as a design contract that can evolve by review; do not require all documented tables to be implemented in this milestone.
-- [ ] Create `docs/manual-testing/milestone-00b-application-foundations.md` and record application-foundation evidence.
+- [x] Implement the Result Pattern and the standard `{ code, message, data }` API response envelope, including field-specific actionable validation errors.
+- [x] Map validation to 400, authentication/authorization to 401/403, missing data to 404, conflicts to 409, rate limits to 429, and unexpected failures to 500.
+- [x] Add global exception handling, request correlation IDs, structured request logging, and safe unexpected-error responses.
+- [x] Establish CQRS command/query and handler conventions with MediatR and FluentValidation; order pipeline behaviors: unhandled exception, performance, validation, idempotency, caching, handler.
+- [x] Establish generic Repository and Unit of Work abstractions without bypassing aggregate boundaries or transaction ownership.
+- [x] Add `TimeProvider`, persisted `DateTimeOffset`, `Asia/Amman` display conversion, and decimal JOD money conventions; business rules must not call `DateTime.UtcNow`.
+- [x] Establish Domain Event dispatch, Outbox persistence, idempotent request persistence, and optimistic concurrency conventions.
+- [x] Establish manual mapping and LINQ projection conventions; do not add AutoMapper.
+- [x] Implement the `AuditLog` entity and persistence with acting user, action, target type/ID, timestamp, relevant old/new values, IP address when available, and mandatory reason support for manual overrides.
+- [x] Configure ASP.NET Core Rate Limiting middleware and endpoint-policy conventions with standard 429 envelope behavior.
+- [x] Add caching abstractions with optional Redis-backed HybridCache; Development must run without Redis, and cache must never be the availability source of truth.
+- [x] Configure TanStack Query, React Hook Form, and Zod in the frontend application.
+- [x] Add shared loading, empty, error, confirmation, and notification patterns with accessible interaction behavior.
+- [x] Establish localization-ready user-facing strings and RTL-safe layout/design tokens while keeping the MVP UI English.
+- [x] Create `docs/data-model.md` before Catalog or Availability implementation. Document entities/relationships, aggregate boundaries, ownership, delete behavior, unique constraints, concurrency tokens, snapshot tables, the three rental status dimensions, monetary fields, date/time conventions, and indexes for availability overlaps, active filters, catalog search, customer history, Outbox processing, hold expiration, and operational dashboards.
+- [x] Add a transition matrix to `docs/data-model.md` for `RentalOperationalStatus`, `RentalFinancialStatus`, and `DamageResolutionStatus`, including allowed transitions, triggering events, authorized actors, validation guards, terminal states, and availability effects.
+- [x] Treat `docs/data-model.md` as a design contract that can evolve by review; do not require all documented tables to be implemented in this milestone.
+- [x] Create `docs/manual-testing/milestone-00b-application-foundations.md` and record application-foundation evidence.
 
 **Exit criteria**
 
-- [ ] A manually exercised command passes through the approved MediatR pipeline and returns the standard success or error envelope.
-- [ ] Validation, 404, conflict, rate-limit, and unexpected-error paths demonstrate correct status mapping and correlation IDs without leaking sensitive details.
-- [ ] Domain Event, Outbox, idempotency, concurrency, and Audit Log records can be persisted and inspected in PostgreSQL.
-- [ ] The application starts and performs its non-cached paths in Development with Redis unavailable.
-- [ ] Shared frontend states are demonstrated with keyboard access, visible focus, and RTL-safe layout behavior.
-- [ ] `docs/data-model.md` is reviewed before Milestone 2 starts and covers every required design topic, including the complete three-dimension transition matrix.
-- [ ] `docs/manual-testing/milestone-00b-application-foundations.md` contains completed evidence for all Exit Criteria.
+- [x] A manually exercised command passes through the approved MediatR pipeline and returns the standard success or error envelope.
+- [x] Validation, 404, conflict, rate-limit, and unexpected-error paths demonstrate correct status mapping and correlation IDs without leaking sensitive details.
+- [x] Domain Event, Outbox, idempotency, concurrency, and Audit Log records can be persisted and inspected in PostgreSQL.
+- [x] The application starts and performs its non-cached paths in Development with Redis unavailable.
+- [x] Shared frontend states are demonstrated with keyboard access, visible focus, and RTL-safe layout behavior.
+- [x] `docs/data-model.md` is reviewed before Milestone 2 starts and covers every required design topic, including the complete three-dimension transition matrix.
+- [x] `docs/manual-testing/milestone-00b-application-foundations.md` contains completed evidence for all Exit Criteria.
+
+0B exit criteria were re-verified on `2026-07-15T01:44:50+03:00`; durable sanitized HTTP, idempotency, concurrency, PostgreSQL, and browser evidence is linked from `docs/manual-testing/milestone-00b-application-foundations.md`.
 
 ## Milestone 1: Identity, Accounts, and Authorization
 

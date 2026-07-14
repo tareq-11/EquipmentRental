@@ -1,6 +1,6 @@
 # Equipment Rental Platform
 
-Milestone 0A establishes the local foundation for the single-vendor event-equipment rental MVP. It contains no catalog, identity, availability, or rental business features yet.
+Milestone 0B adds cross-cutting application conventions to the local foundation. It contains no catalog, identity, availability, rental, or worker business features yet.
 
 ## Repository Layout
 
@@ -58,22 +58,25 @@ dotnet tool run dotnet-ef database update --project infrastructure/infrastructur
 Start the API in one terminal:
 
 ```bash
-dotnet run --project Api
+ASPNETCORE_ENVIRONMENT=Development dotnet run --project Api --urls http://127.0.0.1:5064
 ```
 
-The Development API listens on `http://localhost:5062`. Useful endpoints are:
+The verified Development API listens on `http://127.0.0.1:5064`. Useful endpoints are:
 
-- Swagger UI: `http://localhost:5062/swagger`
-- Health check: `http://localhost:5062/health`
+- Swagger UI: `http://127.0.0.1:5064/swagger`
+- Health check: `http://127.0.0.1:5064/health`
+- Development-only foundation probe: `POST http://127.0.0.1:5064/api/foundation/probes` with `Idempotency-Key` and JSON `{ "label": "manual-probe", "reason": "manual verification" }`
+- Development-only stale-write probe: `PUT http://127.0.0.1:5064/api/foundation/probes/{id}` with JSON `{ "label": "updated", "version": 123 }`
+- Development-only response mapping checks: `GET http://127.0.0.1:5064/api/foundation/errors/{unauthorized|forbidden|not-found|conflict|unexpected}`
 
 Install and start the web application in a second terminal:
 
 ```bash
 npm --prefix web ci
-npm --prefix web run dev
+npm --prefix web run dev -- --port 3001
 ```
 
-The Next.js server listens on `http://localhost:3000`. If that port is occupied, use `npm --prefix web run dev -- --port 3001` and open `http://localhost:3001`. Foundation routes are `/`, `/account`, `/operations`, and `/admin`; authorization is intentionally deferred to Milestone 1.
+The verified Next.js server listens on `http://localhost:3001`. Foundation routes are `/`, `/foundation`, `/account`, `/operations`, and `/admin`; authorization is intentionally deferred to Milestone 1.
 
 ## Frontend Checks
 
@@ -87,7 +90,7 @@ npm --prefix web run build
 
 ## Database Migrations
 
-The initial `InitialCreate` migration deliberately contains no product entities: data modelling begins in Milestone 0B. It establishes the EF migration history cleanly without preempting that work.
+`ApplicationFoundations` adds only the non-business foundation probe, Outbox, idempotency, and audit tables. Catalog and rental tables remain future work governed by `docs/data-model.md`.
 
 Create a future migration only after modelling a reviewed change:
 

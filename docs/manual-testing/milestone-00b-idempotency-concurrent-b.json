@@ -1,0 +1,1 @@
+{"code":200,"message":"Foundation probe recorded.","data":{"id":"<development-probe-id>","label":"idempotency concurrent","createdAt":"2026-07-14T22:42:28.2740469+00:00","displayTime":"2026-07-15 01:42 +03:00","version":800,"idempotentReplay":false}}

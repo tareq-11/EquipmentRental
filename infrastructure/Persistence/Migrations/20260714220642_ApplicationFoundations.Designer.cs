@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using infrastructure.Persistence;
@@ -11,9 +12,11 @@ using infrastructure.Persistence;
 namespace infrastructure.Persistence.Migrations
 {
     [DbContext(typeof(EquipmentRentalDbContext))]
-    partial class EquipmentRentalDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260714220642_ApplicationFoundations")]
+    partial class ApplicationFoundations
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -60,11 +63,6 @@ namespace infrastructure.Persistence.Migrations
                         .IsRequired()
                         .HasMaxLength(200)
                         .HasColumnType("character varying(200)");
-
-                    b.Property<string>("ActorType")
-                        .IsRequired()
-                        .HasMaxLength(30)
-                        .HasColumnType("character varying(30)");
 
                     b.Property<string>("IpAddress")
                         .HasColumnType("text");
@@ -113,11 +111,6 @@ namespace infrastructure.Persistence.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
-                    b.Property<string>("ActorScope")
-                        .IsRequired()
-                        .HasMaxLength(300)
-                        .HasColumnType("character varying(300)");
-
                     b.Property<DateTimeOffset>("CreatedAt")
                         .HasColumnType("timestamp with time zone");
 
@@ -125,11 +118,6 @@ namespace infrastructure.Persistence.Migrations
                         .IsRequired()
                         .HasMaxLength(200)
                         .HasColumnType("character varying(200)");
-
-                    b.Property<string>("RequestFingerprint")
-                        .IsRequired()
-                        .HasMaxLength(64)
-                        .HasColumnType("character varying(64)");
 
                     b.Property<string>("RequestName")
                         .IsRequired()
@@ -148,7 +136,7 @@ namespace infrastructure.Persistence.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("Key", "RequestName", "ActorScope")
+                    b.HasIndex("Key", "RequestName")
                         .IsUnique();
 
                     b.ToTable("idempotent_requests", (string)null);

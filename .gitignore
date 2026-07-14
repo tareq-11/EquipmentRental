@@ -4,6 +4,11 @@ obj/
 .idea/
 *.user
 
+# Ignore Markdown files by default.
+*.md
+*.txt
+tasks.md
+
 # Local environment values may contain database credentials.
 .env
 .env.*

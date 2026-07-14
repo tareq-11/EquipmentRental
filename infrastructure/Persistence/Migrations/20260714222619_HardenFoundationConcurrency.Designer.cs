@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using infrastructure.Persistence;
@@ -11,9 +12,11 @@ using infrastructure.Persistence;
 namespace infrastructure.Persistence.Migrations
 {
     [DbContext(typeof(EquipmentRentalDbContext))]
-    partial class EquipmentRentalDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260714222619_HardenFoundationConcurrency")]
+    partial class HardenFoundationConcurrency
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
