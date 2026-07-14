@@ -1,0 +1,14 @@
+bin/
+obj/
+.vs/
+.idea/
+*.user
+
+# Local environment values may contain database credentials.
+.env
+.env.*
+!.env.example
+
+web/node_modules/
+web/.next/
+web/.env.local

@@ -1,0 +1,1 @@
+export default function AdminPage() { return <section className="shell py-20"><p className="text-xs font-bold tracking-[.2em] text-[#ec6b45]">ADMIN AREA</p><h1 className="display mt-4 text-6xl">Control room</h1><p className="mt-5 max-w-lg">This route is reserved for a protected administration surface in later milestones.</p></section>; }
