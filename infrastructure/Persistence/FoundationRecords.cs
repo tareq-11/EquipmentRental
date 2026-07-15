@@ -2,7 +2,7 @@ using Core.Common;
 
 namespace infrastructure.Persistence;
 
-/// <summary>Durable integration event awaiting a retry-safe processor in a future milestone.</summary>
+/// <summary>Durable integration event claimed and delivered by retry-safe processors.</summary>
 public sealed class OutboxMessage
 {
     /// <summary>Gets the message identifier.</summary>
@@ -19,6 +19,10 @@ public sealed class OutboxMessage
     public DateTimeOffset? ProcessedAt { get; set; }
     /// <summary>Gets delivery attempts.</summary>
     public int AttemptCount { get; set; }
+    /// <summary>Gets when a worker claimed this message, if a lease is active.</summary>
+    public DateTimeOffset? ProcessingStartedAt { get; set; }
+    /// <summary>Gets the earliest time a failed delivery may be retried.</summary>
+    public DateTimeOffset? NextAttemptAt { get; set; }
     /// <summary>Gets the EF concurrency token.</summary>
     public uint Version { get; private set; }
 }

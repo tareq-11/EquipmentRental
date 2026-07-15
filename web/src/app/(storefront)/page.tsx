@@ -8,7 +8,7 @@ export default function StorefrontPage() {
           <p className="text-xs font-bold tracking-[.2em] text-[#ec6b45]">AMMAN · EVENT EQUIPMENT</p>
           <h1 className="display mt-8 max-w-2xl text-6xl leading-[.86] tracking-[-.045em] sm:text-8xl">Every good room starts with a clean load-in.</h1>
           <div className="mt-10 flex flex-wrap items-center gap-4">
-            <a href="#equipment" className="bg-[#0c2633] px-5 py-3 text-sm font-bold text-[#eef2e8]">Browse equipment</a>
+            <a href="#equipment" className="hero-primary-cta px-5 py-3 text-sm font-bold">Browse equipment</a>
             <Link href="/account" className="border border-[#0c2633] px-5 py-3 text-sm font-bold">Manage a rental</Link>
           </div>
         </div>

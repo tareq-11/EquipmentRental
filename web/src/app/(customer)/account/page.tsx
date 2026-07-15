@@ -1,1 +1,3 @@
-export default function AccountPage() { return <section className="shell py-20"><p className="text-xs font-bold tracking-[.2em] text-[#ec6b45]">CUSTOMER AREA</p><h1 className="display mt-4 text-6xl">Your rentals</h1><p className="mt-5 max-w-lg">Account authentication and rental records are introduced in Milestone 1.</p></section>; }
+import { AccountConsole } from "@/components/auth/identity-console";
+
+export default function AccountPage() { return <AccountConsole />; }

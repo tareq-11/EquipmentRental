@@ -4,10 +4,13 @@ obj/
 .idea/
 *.user
 
-# Ignore Markdown files by default.
+# Repository documentation and sanitized manual-testing evidence are source files.
+# Ignore only local/generated artifacts rather than broad file extensions.
+
+# Ignore all Markdown and text documentation files
 *.md
 *.txt
-tasks.md
+*.log
 
 # Local environment values may contain database credentials.
 .env
@@ -17,3 +20,7 @@ tasks.md
 web/node_modules/
 web/.next/
 web/.env.local
+
+# Local manual-test captures may contain secrets or be regenerated at will.
+docs/manual-testing/*.local.*
+docs/manual-testing/*.secret.*

@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using infrastructure.Persistence;
@@ -11,9 +12,11 @@ using infrastructure.Persistence;
 namespace infrastructure.Persistence.Migrations
 {
     [DbContext(typeof(EquipmentRentalDbContext))]
-    partial class EquipmentRentalDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260715000036_RepairOutboxDeliveryLease")]
+    partial class RepairOutboxDeliveryLease
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -338,11 +341,6 @@ namespace infrastructure.Persistence.Migrations
                         .IsRequired()
                         .HasMaxLength(30)
                         .HasColumnType("character varying(30)");
-
-                    b.Property<string>("SecurityStamp")
-                        .IsRequired()
-                        .HasMaxLength(64)
-                        .HasColumnType("character varying(64)");
 
                     b.Property<bool>("TermsAccepted")
                         .HasColumnType("boolean");

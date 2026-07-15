@@ -59,6 +59,18 @@ public interface IFoundationProbeStore
 /// <summary>Updates a probe only when the caller still holds its observed version.</summary>
 public sealed record UpdateFoundationProbeCommand(Guid Id, string Label, uint Version) : ICommand<FoundationProbeResponse>;
 
+/// <summary>Validates a foundation probe update before its handler can load or mutate a record.</summary>
+public sealed class UpdateFoundationProbeCommandValidator : AbstractValidator<UpdateFoundationProbeCommand>
+{
+    /// <summary>Initializes update validation rules.</summary>
+    public UpdateFoundationProbeCommandValidator()
+    {
+        RuleFor(x => x.Id).NotEmpty();
+        RuleFor(x => x.Label).NotEmpty().MaximumLength(100).Matches("^[a-zA-Z0-9 ._-]+$").WithMessage("Label may contain letters, numbers, spaces, periods, underscores, and hyphens.");
+        RuleFor(x => x.Version).Must(version => version > 0).WithMessage("Version must be the current positive concurrency version.");
+    }
+}
+
 /// <summary>Updates the non-business probe to manually demonstrate an actionable stale-write conflict.</summary>
 public sealed class UpdateFoundationProbeCommandHandler(IFoundationProbeStore store, IUnitOfWork unitOfWork) : IRequestHandler<UpdateFoundationProbeCommand, Result<FoundationProbeResponse>>
 {

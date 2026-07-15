@@ -10,6 +10,13 @@ using FluentValidation;
 using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.AspNetCore.Mvc;
 using Api.Infrastructure;
+using infrastructure.Identity;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.Extensions.Options;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
+using System.Security.Claims;
+using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -20,6 +27,26 @@ builder.Host.UseSerilog((context, services, configuration) => configuration
     .WriteTo.Console());
 
 builder.Services.AddInfrastructure(builder.Configuration);
+var jwt = builder.Configuration.GetSection(JwtOptions.SectionName).Get<JwtOptions>() ?? new JwtOptions();
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(options =>
+{
+    options.TokenValidationParameters = new TokenValidationParameters { ValidateIssuer = true, ValidIssuer = jwt.Issuer, ValidateAudience = true, ValidAudience = jwt.Audience, ValidateIssuerSigningKey = true, IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwt.SigningKey)), ValidateLifetime = true, ClockSkew = TimeSpan.FromSeconds(30) };
+    options.Events = new JwtBearerEvents
+    {
+        OnTokenValidated = async context =>
+        {
+            var userId = context.Principal?.FindFirstValue(System.Security.Claims.ClaimTypes.NameIdentifier);
+            var stamp = context.Principal?.FindFirstValue("sst");
+            if (!Guid.TryParse(userId, out var id) || string.IsNullOrWhiteSpace(stamp)) { context.Fail("Invalid session."); return; }
+            var db = context.HttpContext.RequestServices.GetRequiredService<EquipmentRentalDbContext>();
+            var user = await db.Users.AsNoTracking().SingleOrDefaultAsync(x => x.Id == id, context.HttpContext.RequestAborted);
+            if (user is null || user.AccountStatus == Core.Identity.AccountStatus.Disabled || !System.Security.Cryptography.CryptographicOperations.FixedTimeEquals(Encoding.UTF8.GetBytes(stamp), Encoding.UTF8.GetBytes(user.SecurityStamp))) context.Fail("Session revoked.");
+        },
+        OnChallenge = async context => { context.HandleResponse(); await ExceptionHandlingMiddleware.WriteAsync(context.HttpContext, new Error("authentication_required", "Authentication is required.", ErrorType.Unauthorized)); },
+        OnForbidden = context => ExceptionHandlingMiddleware.WriteAsync(context.HttpContext, new Error("access_denied", "You do not have permission for this action.", ErrorType.Forbidden))
+    };
+});
+builder.Services.AddAuthorization(options => options.AddPolicy("Operations", policy => policy.RequireRole("OperationsEmployee", "Admin")));
 builder.Services.AddControllers();
 builder.Services.Configure<ApiBehaviorOptions>(options =>
 {
@@ -45,7 +72,7 @@ builder.Services.Configure<ApiBehaviorOptions>(options =>
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddScoped<Services.Abstractions.IActorContext, HttpActorContext>();
 builder.Services.AddMediatR(configuration => configuration.RegisterServicesFromAssembly(typeof(Services.Foundation.CreateFoundationProbeCommand).Assembly));
-builder.Services.AddScoped<IValidator<Services.Foundation.CreateFoundationProbeCommand>, Services.Foundation.CreateFoundationProbeCommandValidator>();
+builder.Services.AddValidatorsFromAssembly(typeof(Services.Foundation.CreateFoundationProbeCommand).Assembly);
 // Pipeline registration order is the required execution order: exception, performance, validation, idempotency, cache, handler.
 builder.Services.AddTransient(typeof(IPipelineBehavior<,>), typeof(UnhandledExceptionBehavior<,>));
 builder.Services.AddTransient(typeof(IPipelineBehavior<,>), typeof(PerformanceBehavior<,>));
@@ -64,6 +91,12 @@ builder.Services.AddRateLimiter(options =>
         limiter.QueueLimit = 0;
         limiter.AutoReplenishment = true;
     });
+    options.AddPolicy("auth", context => RateLimitPartition.GetFixedWindowLimiter(
+        context.Connection.RemoteIpAddress?.ToString() ?? "unknown",
+        _ => new FixedWindowRateLimiterOptions { PermitLimit = 10, Window = TimeSpan.FromMinutes(1), QueueLimit = 0, AutoReplenishment = true }));
+    options.AddPolicy("otp", context => RateLimitPartition.GetFixedWindowLimiter(
+        context.Connection.RemoteIpAddress?.ToString() ?? "unknown",
+        _ => new FixedWindowRateLimiterOptions { PermitLimit = 5, Window = TimeSpan.FromMinutes(10), QueueLimit = 0, AutoReplenishment = true }));
 });
 builder.Services.AddSwaggerGen();
 builder.Services.AddHealthChecks()
@@ -72,8 +105,10 @@ builder.Services.AddResponseCompression();
 
 if (builder.Environment.IsDevelopment())
 {
+    var allowedOrigins = builder.Configuration.GetSection("Cors:AllowedOrigins").Get<string[]>() ?? ["http://localhost:3001"];
     builder.Services.AddCors(options => options.AddPolicy("Development", policy => policy
-        .WithOrigins("http://localhost:3000", "http://localhost:3001")
+         .WithOrigins(allowedOrigins)
+          .AllowCredentials()
         .AllowAnyHeader()
         .AllowAnyMethod()));
 }
@@ -81,8 +116,13 @@ if (builder.Environment.IsDevelopment())
 var app = builder.Build();
 
 app.UseMiddleware<CorrelationIdMiddleware>();
+app.UseSerilogRequestLogging(options =>
+{
+    options.MessageTemplate = "HTTP {RequestMethod} {RequestPath} responded {StatusCode} in {Elapsed:0.0000} ms (CorrelationId: {CorrelationId})";
+    options.EnrichDiagnosticContext = (diagnosticContext, context) =>
+        diagnosticContext.Set("CorrelationId", context.Items["CorrelationId"]?.ToString() ?? "unknown");
+});
 app.UseMiddleware<ExceptionHandlingMiddleware>();
-app.UseSerilogRequestLogging();
 app.UseResponseCompression();
 app.UseRateLimiter();
 
@@ -93,6 +133,7 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
+app.UseAuthentication();
 app.UseAuthorization();
 app.MapHealthChecks("/health");
 app.MapControllers();
